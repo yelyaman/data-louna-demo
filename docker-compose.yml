@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  data-louna-app:
+    container_name: data-louna-app
+    restart: on-failure
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 4000:4000
+    command: npm run start:dev
+    depends_on:
+      - postgresdb
+      - cache
+    volumes:
+      - .:/usr/src/app
+  postgresdb:
+    image: postgres:14-alpine
+    restart: unless-stopped
+    container_name: db
+    ports:
+      - $DB_DOCKER_PORT:$DB_DOCKER_PORT
+    env_file: ./.env
+    environment:
+      - POSTGRES_USER=$DB_USER
+      - POSTGRES_PASSWORD=$DB_ROOT_PASSWORD
+      - POSTGRES_DB=$DB_DATABASE
+    volumes:
+      - db:/var/lib/postgres
+  cache:
+    image: redis:6.2-alpine
+    restart: unless-stopped
+    ports:
+      - $REDIS_PORT:$REDIS_PORT
+    command: redis-server --save 20 1 --loglevel warning --requirepass $REDIS_PASSWORD
+    volumes:
+      - cache:/data
+volumes:
+  rabbitmq:
+  db:
+  cache:
+    driver: local
