@@ -162,7 +162,7 @@ erDiagram
     User ||--o| Skin : owns
     Purchase ||--|| SkinTransaction : generates
     Skin ||--o| User : ownedBy
-
+```
 ## Заключение
 
 Если что то не так, можете плз написать комменты в hh или в git :)
