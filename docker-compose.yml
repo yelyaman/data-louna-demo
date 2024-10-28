@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 4000:4000
+      - $APP_PORT:$APP_PORT
     command: npm run start:dev
     depends_on:
       - postgresdb
