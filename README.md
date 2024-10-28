@@ -125,6 +125,7 @@
 
 ## ER-диаграмма
 
+```mermaid
 erDiagram
     User {
         UUID id PK
