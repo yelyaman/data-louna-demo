@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { SkinportService } from './skinport.service';
-import { UsersModule } from '../users/users.module';
+import { UserModule } from '../user/users.module';
 import { SkinportController } from './skinport.controller';
 
 @Module({
@@ -10,7 +10,7 @@ import { SkinportController } from './skinport.controller';
       timeout: 30000,
       maxRedirects: 5,
     }),
-    UsersModule
+    UserModule
   ],
   controllers: [SkinportController],
   providers: [SkinportService],

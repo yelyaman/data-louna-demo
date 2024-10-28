@@ -16,7 +16,7 @@ import { User } from './user.entity';
     id: string;
 
     @Column()
-    market_hash_name: string
+    marketHashName: string
 
     @Column()
     price: number

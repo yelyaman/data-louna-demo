@@ -2,8 +2,8 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { ISkin } from 'src/common/interfaces/skinport.interface';
-import { GetMinimumPrisesForItemsDto } from './skinport.dto';
-import { UsersService } from '../users/users.service';
+import { GetMinimumPricesForItemsDto } from './skinport.dto';
+import { UserService } from '../user/users.service';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 
@@ -14,7 +14,7 @@ export class SkinportService {
     @InjectRedis() private readonly redis: Redis,
   ) { }
 
-  async getMinimumPrisesForItems(params: GetMinimumPrisesForItemsDto): Promise<object> {
+  async getMinimumPricesForItems(params: GetMinimumPricesForItemsDto): Promise<object> {
     try {
       const tradable = await this.getSkins({ ...params, tradable: 1 })
       const nonTradable = await this.getSkins({ ...params, tradable: 0 })
@@ -36,7 +36,7 @@ export class SkinportService {
     }
   }
 
-  async getSkins(params: GetMinimumPrisesForItemsDto): Promise<ISkin[]> {
+  async getSkins(params: GetMinimumPricesForItemsDto): Promise<ISkin[]> {
     const cacheKey = `${params.app_id}_${params.currency}_${params.tradable}`
     const cached = await this.redis.get(cacheKey)
 
@@ -50,7 +50,7 @@ export class SkinportService {
       }),
     );
 
-    await this.redis.set(`${params.app_id}_${params.currency}_${params.tradable}`, JSON.stringify(data), 'EX', 300)
+    await this.redis.set(`${params.app_id}_${params.currency}_${params.tradable}`, JSON.stringify(data), 'EX', 300) // 5 минут
 
     return data;
   }

@@ -4,7 +4,7 @@ import { AppService } from './app.service';
 import { SkinportModule } from './modules/skinport/skinport.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
+import { UserModule } from './modules/user/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Purchase } from './entities/purchase.entity';
@@ -48,7 +48,7 @@ import { SkinTransaction } from './entities/transaction.entity';
     SkinportModule,
     PurchaseModule,
     AuthModule,
-    UsersModule
+    UserModule
   ],
   controllers: [AppController],
   providers: [

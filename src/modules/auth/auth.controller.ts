@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { SignInDto } from './auth.dto';
 import { AuthService } from './auth.service';
-import { ChangePasswordDto, CreateUserDto } from '../users/users.dto';
+import { ChangePasswordDto, CreateUserDto } from '../user/user.dto';
 import { Public } from '../../common/decorators/ispublic.decorator';
 
 @Controller('auth')
@@ -41,8 +41,8 @@ export class AuthController {
   @Public()
   @Get('refresh')
   async refresh(
-    @Headers('Authorization') authToken: string,
-    @Headers('refreshToken') refreshToken: string
+    @Headers('authorization') authToken: string,
+    @Headers('refresh-token') refreshToken: string,
   ) {
     const accessToken = authToken.split(' ')[1]
     return this.authService.refresh(refreshToken, accessToken);

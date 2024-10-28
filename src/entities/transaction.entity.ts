@@ -15,10 +15,10 @@ import { Purchase } from './purchase.entity';
     id: string;
   
     @Column({ type: 'float' })
-    total_amount: number;
+    totalAmount: number;
 
     @Column()
-    payment_method: string
+    paymentMethod: string
 
     @OneToOne(() => Purchase, purchase => purchase.transaction)
     purchase: Purchase

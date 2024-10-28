@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Skin } from 'src/entities/skin.entity';
 import { EntityManager, Repository } from 'typeorm';
@@ -16,5 +16,15 @@ export class SkinService {
         return repository.findOne({
             where: { id }
         })
+    }
+
+    async decreaseQuantity(skin: Skin, quantity: number, manager: EntityManager) {
+        const repository = manager ? manager.getRepository(Skin) : this.skinRepository
+        if (skin.quantity < quantity)
+            throw new BadRequestException('Not enought skin quantity')
+
+        skin.quantity -= quantity
+
+        return repository.save(skin)
     }
 }

@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -20,12 +21,13 @@ export class Purchase {
   user: User;
 
   @Column()
-  skin_id: string;
+  skinId: string;
 
   @Column()
   quantity: number;
 
   @OneToOne(() => SkinTransaction, transaction => transaction.purchase)
+  @JoinColumn()
   transaction: SkinTransaction
 
   @CreateDateColumn()

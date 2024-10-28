@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtPayload } from '../auth/auth.dto';
 import { DataSource, Repository } from 'typeorm';
 import { BuySkinDto } from './purchase.dto';
@@ -24,22 +24,25 @@ export class PurchaseService {
       const skin = await this.skinService.getOneById(body.skinId, manager)
 
       const totalAmount = skin.price * body.quantity
-
       const updatedBalance = await this.balanceService.decreaseBalance(user.id, totalAmount, manager)
+
+      this.skinService.decreaseQuantity(skin, body.quantity, manager)
+
       const purchase = this.purchaseRepository.create({
         user: {
           id: user.id
         },
-        skin_id: body.skinId,
+        skinId: body.skinId,
         quantity: body.quantity,
       })
 
       const transaction = await this.transactionService.create({
         totalAmount: totalAmount,
-        payment_method: body.payment_info.method
+        paymentMethod: body.paymentInfo.method
       }, manager)
 
       purchase.transaction = transaction
+      await manager.save(purchase);
 
       return updatedBalance
     })

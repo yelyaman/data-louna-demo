@@ -1,12 +1,12 @@
 import {
-    BadRequestException,
-    Injectable,
-    UnauthorizedException,
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
+import { UserService } from '../user/users.service';
 import { JwtPayload, SignInDto } from './auth.dto';
-import { ChangePasswordDto, CreateUserDto } from '../users/users.dto';
-import * as bcrypt from 'bcrypt';
+import { ChangePasswordDto, CreateUserDto } from '../user/user.dto';
+import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuid } from 'uuid';
 import { InjectRedis } from '@nestjs-modules/ioredis';
@@ -14,103 +14,100 @@ import Redis from 'ioredis';
 
 @Injectable()
 export class AuthService {
-    constructor(
-        private usersService: UsersService,
-        private jwtService: JwtService,
-        @InjectRedis() private readonly redis: Redis,
-    ) { }
+  constructor(
+    private usersService: UserService,
+    private jwtService: JwtService,
+    @InjectRedis() private readonly redis: Redis,
+  ) {}
 
-    async signIn(body: SignInDto) {
-        const user = await this.usersService.findOneByEmail(body.email);
-        if (!user) throw new BadRequestException('user not found');
+  async signIn(body: SignInDto) {
+    const user = await this.usersService.findOneByEmail(body.email);
+    if (!user) throw new BadRequestException('user not found');
 
-        if (!bcrypt.compare(body.password, user.password))
-            throw new UnauthorizedException();
+    const equal = await bcrypt.compare(body.password, user.password);
+    if (!equal) throw new UnauthorizedException('Invalid password or email');
+    
+    const { password, ...rest } = user;
 
-        const { password, ...rest } = user;
+    const tokens = await this.generateTokens(rest);
 
-        const accessToken = await this.generateAccessToken(rest);
+    return tokens;
+  }
 
-        const refreshToken = await this.jwtService.signAsync(rest, {
-            secret: process.env.REFRESH_KEY,
-            expiresIn: 180,
-        });
+  async signUp(body: CreateUserDto) {
+    return await this.usersService.create(body);
+  }
 
-        await this.saveRefreshToken(refreshToken, rest);
+  async changePassword(body: ChangePasswordDto, user: JwtPayload) {
+    const foundUser = await this.usersService.findOneByEmail(user.email);
+    const equal = await bcrypt.compare(body.oldPassword, foundUser.password);
+    if (!equal) throw new BadRequestException('wrong old password');
 
-        return { accessToken, refreshToken };
-    }
+    await this.usersService.updatePassword(foundUser.id, body.newPassword);
 
-    async signUp(body: CreateUserDto) {
-        return await this.usersService.create(body);
-    }
+    return { success: true };
+  }
 
-    async changePassword(body: ChangePasswordDto, user: JwtPayload) {
-        const foundUser = await this.usersService.findOneByEmail(user.email)
-        if (!bcrypt.compare(body.oldPassword, foundUser.password))
-            throw new BadRequestException('wrong old password');
+  async signOut(user: JwtPayload) {
+    await this.setTokenBlackList(user.accessTokenId);
+    await this.redis.del(`refreshToken:${user.id}`);
 
-        return await this.usersService.updatePassword(foundUser.id, body.newPassword);
-    }
+    return { msg: 'signed out' };
+  }
 
-    async signOut(user: JwtPayload) {
-        await this.setTokenBlackList(user.accessTokenId);
-        await this.redis.del(`refreshToken:${user.id}`);
+  async refresh(refreshToken: string, accessToken: string) {
+    const oldAccessTokenPayload = await this.jwtService.decode(accessToken);
+    const cachedRefreshToken = await this.redis.get(
+      `refreshToken:${oldAccessTokenPayload.id}`,
+    );
 
-        return { msg: 'signed out' };
-    }
+    if (!cachedRefreshToken || cachedRefreshToken !== refreshToken)
+      throw new UnauthorizedException('Invalid refresh token');
 
-    async refresh(refreshToken: string, accessToken: string) {
-        const oldAccessTokenPayload = await this.jwtService.decode(accessToken);
+    await this.setTokenBlackList(oldAccessTokenPayload.accessTokenId);
 
-        const cachedRefreshToken = await this.redis.get(
-            `refreshToken:${oldAccessTokenPayload.id}`,
-        );
+    const newTokens = await this.generateTokens(oldAccessTokenPayload);
 
-        console.log(cachedRefreshToken)
-        if (!cachedRefreshToken || cachedRefreshToken != refreshToken)
-            throw new UnauthorizedException('Invalid refresh token');
+    return newTokens;
+  }
 
-        await this.setTokenBlackList(oldAccessTokenPayload.accessTokenId);
+  private saveRefreshToken = async (refreshToken, user) => {
+    await this.redis.set(
+      `refreshToken:${user.id}`,
+      refreshToken,
+      'EX',
+      60 * 10, //10 минут
+    );
+  };
 
-        const newAccessToken = await this.generateAccessToken(
-            oldAccessTokenPayload,
-        );
+  private generateTokens = async (payload) => {
+    const accessTokenId = uuid();
+    const { exp, iat, ...purePayload } = payload;
 
-        return { accessToken: newAccessToken };
-    }
+    const accessToken = await this.jwtService.signAsync(
+      { ...purePayload, accessTokenId },
+      {
+        secret: process.env.JWT_KEY,
+        expiresIn: '2m',
+      },
+    );
 
-    private saveRefreshToken = async (refreshToken, user) => {
-        await this.redis.set(
-            `refreshToken:${user.id}`,
-            refreshToken,
-            'EX',
-            1000 * 180,
-        );
-    };
+    const refreshToken = await this.jwtService.signAsync(purePayload, {
+      secret: process.env.REFRESH_KEY,
+      expiresIn: '10m',
+    });
 
-    private generateAccessToken = async (payload) => {
-        const accessTokenId = uuid();
-        const { exp, iat, ...purePayload } = payload;
+    await this.saveRefreshToken(refreshToken, purePayload);
 
-        console.log(purePayload);
-        const accessToken = await this.jwtService.signAsync(
-            { ...purePayload, accessTokenId },
-            {
-                secret: process.env.JWT_KEY,
-                expiresIn: '1d',
-            },
-        );
+    return { accessToken, refreshToken };
+  };
 
-        return accessToken;
-    };
-
-    private setTokenBlackList = async (accessTokenId: string) => {
-        await this.redis.set(
-            `blacklist:${accessTokenId}`,
-            accessTokenId,
-            'EX',
-            60 * 60 * 1000 * 24 * 10,
-        ); // 10 дней
-    };
+  private setTokenBlackList = async (accessTokenId: string) => {
+    await this.redis.set(
+      `blacklist:${accessTokenId}`,
+      accessTokenId,
+      'EX',
+      60 * 60 * 24 * 10,
+    ); // 10 дней
+  };
 }

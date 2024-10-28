@@ -11,7 +11,7 @@ export class TransactionService {
         private skinTransactionRepository: Repository<SkinTransaction>
     ) { }
 
-    async create(body: { totalAmount: number, payment_method: string }, manager?: EntityManager) {
+    async create(body: { totalAmount: number, paymentMethod: string }, manager?: EntityManager) {
         const repository = manager ? manager.getRepository(SkinTransaction) : this.skinTransactionRepository;
 
         const transaction = repository.create(body)

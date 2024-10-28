@@ -1,7 +1,7 @@
 import { IsOptional, IsNumber, IsEnum } from "class-validator"
 import { Currency } from "src/common/enums"
 
-export class GetMinimumPrisesForItemsDto {
+export class GetMinimumPricesForItemsDto {
     @IsOptional()
     @IsNumber()
     app_id: number

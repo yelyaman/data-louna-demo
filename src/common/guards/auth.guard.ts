@@ -32,8 +32,8 @@ export class AuthGuard implements CanActivate {
 
     // Можно сделать что бы извлекалось из cookie
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    if (type !== 'Bearer') throw new UnauthorizedException();
-
+    if (type !== 'Bearer') throw new UnauthorizedException('access_token not found');
+    
     try {
       const payload: JwtPayload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_KEY,

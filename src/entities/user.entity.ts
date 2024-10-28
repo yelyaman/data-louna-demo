@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToMany,
   OneToMany,
   OneToOne,
@@ -19,6 +20,7 @@ export class User {
   id: string;
 
   @OneToOne(() => Balance, balance => balance.user)
+  @JoinColumn()
   balance: Balance;
 
   @OneToMany(() => Purchase, purchase => purchase.user)

@@ -1,5 +1,5 @@
 import { Type } from "class-transformer"
-import { IsNumber, IsNotEmpty, IsUUID, IsString, IsDefined, IsNotEmptyObject, IsObject, ValidateNested } from "class-validator"
+import { IsNumber, IsNotEmpty, IsUUID, IsString, IsDefined, IsNotEmptyObject, IsObject, ValidateNested, Min } from "class-validator"
 
 class PaymentInfo {
     @IsNotEmpty()
@@ -14,6 +14,7 @@ export class BuySkinDto {
 
     @IsNotEmpty()
     @IsNumber()
+    @Min(1)
     quantity: number
 
     @IsDefined()
@@ -21,5 +22,5 @@ export class BuySkinDto {
     @IsObject()
     @ValidateNested()
     @Type(() => PaymentInfo)
-    payment_info: PaymentInfo
+    paymentInfo: PaymentInfo
 }

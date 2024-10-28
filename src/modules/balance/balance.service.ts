@@ -31,7 +31,7 @@ export class BalanceService {
         const repository = manager ? manager.getRepository(Balance) : this.balanceRepository
         const balance = await this.getUserBalance(userId, manager)
         if (balance.amount <= totalAmount)
-            throw new BadRequestException('total more than balance')
+            throw new BadRequestException('total cost more than balance')
 
         balance.amount -= totalAmount
 
