@@ -15,6 +15,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './common/guards/auth.guard';
 import { Skin } from './entities/skin.entity';
 import { SkinTransaction } from './entities/transaction.entity';
+import { UserItem } from './entities/user-item.entity';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { SkinTransaction } from './entities/transaction.entity';
       password: process.env.DB_ROOT_PASSWORD,
       database: process.env.DB_DATABASE,
       synchronize: true,
-      entities: [User, Balance, Purchase, SkinTransaction, Skin],
+      entities: [User, Balance, Purchase, SkinTransaction, Skin, UserItem],
     }),
     RedisModule.forRoot({
       type: 'single',

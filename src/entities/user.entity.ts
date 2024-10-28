@@ -13,6 +13,7 @@ import {
 import { Balance } from './balance.entity';
 import { Purchase } from './purchase.entity';
 import { Skin } from './skin.entity';
+import { UserItem as UserItem } from './user-item.entity';
 
 @Entity()
 export class User {
@@ -32,8 +33,8 @@ export class User {
   @Column()
   password: string;
 
-  @ManyToMany(() => Skin, (skin) => skin.users)
-  skins: Skin[];
+  @OneToMany(() => UserItem, (item) => item.user)
+  items: UserItem[];
 
   @CreateDateColumn()
   createdAt: Date;

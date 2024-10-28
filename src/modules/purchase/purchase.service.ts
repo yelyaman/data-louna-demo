@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BalanceService } from '../balance/balance.service';
 import { SkinService } from '../skin/skin.service';
 import { TransactionService } from '../transaction/transaction.service';
+import { UserItemService } from '../user-item/user-item.service';
 
 @Injectable()
 export class PurchaseService {
@@ -16,6 +17,7 @@ export class PurchaseService {
     private readonly balanceService: BalanceService,
     private readonly skinService: SkinService,
     private readonly transactionService: TransactionService,
+    private readonly userItemService: UserItemService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -39,6 +41,14 @@ export class PurchaseService {
         skinId: body.skinId,
         quantity: body.quantity,
       });
+
+      this.userItemService.addItem({
+        user: {
+          id: user.id,
+        },
+        skin,
+        quantity: body.quantity
+      })
 
       const transaction = await this.transactionService.create(
         {

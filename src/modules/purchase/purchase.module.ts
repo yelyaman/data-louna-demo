@@ -7,6 +7,7 @@ import { SkinModule } from '../skin/skin.module';
 import { BalanceModule } from '../balance/balance.module';
 import { Purchase } from 'src/entities/purchase.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserItemModule } from '../user-item/user-item.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     SkinModule,
     PurchaseModule,
     BalanceModule,
+    UserItemModule,
   ],
   controllers: [PurchaseController],
   providers: [PurchaseService],

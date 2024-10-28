@@ -3,28 +3,26 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  OneToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { UserItem } from './user-item.entity';
+import { User } from './user.entity';
+import { Skin } from './skin.entity';
 
 @Entity()
-export class Skin {
+export class UserItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
-  marketHashName: string;
+  @ManyToOne(() => User, (user) => user.items)
+  user: User;
 
-  @Column()
-  price: number;
+  @ManyToOne(() => Skin, (skin) => skin.items)
+  skin: Skin;
 
   @Column()
   quantity: number;
-
-  @OneToMany(() => UserItem, (item) => item.skin)
-  items: UserItem[]; 
 
   @CreateDateColumn()
   createdAt: Date;

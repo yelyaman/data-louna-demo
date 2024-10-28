@@ -11,14 +11,13 @@ export class TransactionService {
   ) {}
 
   async create(
-    body: { totalAmount: number; paymentMethod: string },
+    body: Pick<SkinTransaction, 'totalAmount' | 'paymentMethod'>,
     manager?: EntityManager,
   ) {
     const repository = manager
       ? manager.getRepository(SkinTransaction)
       : this.skinTransactionRepository;
-
-    const transaction = repository.create(body);
-    return repository.save(transaction);
+      
+    return repository.save(body);
   }
 }
