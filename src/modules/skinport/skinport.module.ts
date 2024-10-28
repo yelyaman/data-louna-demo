@@ -10,10 +10,10 @@ import { SkinportController } from './skinport.controller';
       timeout: 30000,
       maxRedirects: 5,
     }),
-    UserModule
+    UserModule,
   ],
   controllers: [SkinportController],
   providers: [SkinportService],
-  exports: [SkinportService]
+  exports: [SkinportService],
 })
 export class SkinportModule {}

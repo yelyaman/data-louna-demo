@@ -15,10 +15,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     TransactionModule,
     SkinModule,
     PurchaseModule,
-    BalanceModule
+    BalanceModule,
   ],
   controllers: [PurchaseController],
   providers: [PurchaseService],
-  exports: [PurchaseService]
+  exports: [PurchaseService],
 })
-export class PurchaseModule { }
+export class PurchaseModule {}

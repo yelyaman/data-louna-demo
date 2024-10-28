@@ -8,7 +8,7 @@ export class SkinportController {
 
   @Get('get-minimim-prices')
   getMinimumPricesForItem(
-    @Query() queryParams: GetMinimumPricesForItemsDto
+    @Query() queryParams: GetMinimumPricesForItemsDto,
   ): Promise<object> {
     return this.skinportService.getMinimumPricesForItems(queryParams);
   }

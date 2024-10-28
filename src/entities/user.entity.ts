@@ -19,12 +19,12 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Balance, balance => balance.user)
+  @OneToOne(() => Balance, (balance) => balance.user)
   @JoinColumn()
   balance: Balance;
 
-  @OneToMany(() => Purchase, purchase => purchase.user)
-  purchases: Purchase[]
+  @OneToMany(() => Purchase, (purchase) => purchase.user)
+  purchases: Purchase[];
 
   @Column()
   email: string;
@@ -32,8 +32,8 @@ export class User {
   @Column()
   password: string;
 
-  @ManyToMany(() => Skin, skin => skin.users)
-  skins: Skin[]
+  @ManyToMany(() => Skin, (skin) => skin.users)
+  skins: Skin[];
 
   @CreateDateColumn()
   createdAt: Date;

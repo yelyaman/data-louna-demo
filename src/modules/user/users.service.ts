@@ -33,13 +33,16 @@ export class UserService {
       password: hashedPassword,
     });
 
-    this.balanceService.createBalance(user.id)
-    
+    this.balanceService.createBalance(user.id);
+
     return user;
   }
 
   async updatePassword(userId: string, password: string) {
     const hashedPassword = await bcrypt.hash(password, 12);
-    await this.usersRepository.update({ id: userId }, { password: hashedPassword });
+    await this.usersRepository.update(
+      { id: userId },
+      { password: hashedPassword },
+    );
   }
 }

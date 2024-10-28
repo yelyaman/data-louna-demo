@@ -29,13 +29,7 @@ import { SkinTransaction } from './entities/transaction.entity';
       password: process.env.DB_ROOT_PASSWORD,
       database: process.env.DB_DATABASE,
       synchronize: true,
-      entities: [
-        User,
-        Balance,
-        Purchase,
-        SkinTransaction,
-        Skin
-      ],
+      entities: [User, Balance, Purchase, SkinTransaction, Skin],
     }),
     RedisModule.forRoot({
       type: 'single',
@@ -43,12 +37,12 @@ import { SkinTransaction } from './entities/transaction.entity';
         host: process.env.REDIS_HOST,
         port: +process.env.REDIS_PORT,
         password: process.env.REDIS_PASSWORD,
-      }
+      },
     }),
     SkinportModule,
     PurchaseModule,
     AuthModule,
-    UserModule
+    UserModule,
   ],
   controllers: [AppController],
   providers: [
@@ -56,7 +50,7 @@ import { SkinTransaction } from './entities/transaction.entity';
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
-    }
+    },
   ],
 })
-export class AppModule { }
+export class AppModule {}

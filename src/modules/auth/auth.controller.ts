@@ -5,7 +5,7 @@ import {
   Post,
   Request,
   Headers,
-  Patch
+  Patch,
 } from '@nestjs/common';
 import { SignInDto } from './auth.dto';
 import { AuthService } from './auth.service';
@@ -14,7 +14,7 @@ import { Public } from '../../common/decorators/ispublic.decorator';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   @Get('info')
   getProfile(@Request() req) {
@@ -34,7 +34,10 @@ export class AuthController {
   }
 
   @Patch('change-password')
-  async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
+  async changePassword(
+    @Request() req,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
     return this.authService.changePassword(changePasswordDto, req.user);
   }
 
@@ -44,7 +47,7 @@ export class AuthController {
     @Headers('authorization') authToken: string,
     @Headers('refresh-token') refreshToken: string,
   ) {
-    const accessToken = authToken.split(' ')[1]
+    const accessToken = authToken.split(' ')[1];
     return this.authService.refresh(refreshToken, accessToken);
   }
 

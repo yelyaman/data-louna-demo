@@ -17,23 +17,24 @@ export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     @InjectRedis() private readonly redis: Redis,
-    private reflector: Reflector
+    private reflector: Reflector,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getClass(),
-      context.getHandler()
-    ])
+      context.getHandler(),
+    ]);
 
-    if (isPublic) return true
+    if (isPublic) return true;
 
     const request: Request = context.switchToHttp().getRequest();
 
     // Можно сделать что бы извлекалось из cookie
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    if (type !== 'Bearer') throw new UnauthorizedException('access_token not found');
-    
+    if (type !== 'Bearer')
+      throw new UnauthorizedException('access_token not found');
+
     try {
       const payload: JwtPayload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_KEY,
@@ -42,7 +43,7 @@ export class AuthGuard implements CanActivate {
       const blackListed = await this.redis.get(
         `blacklist:${payload.accessTokenId}`,
       );
-      
+
       if (blackListed)
         throw new UnauthorizedException('access token in black list');
 

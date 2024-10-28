@@ -1,4 +1,4 @@
-import { Currency } from "../enums";
+import { Currency } from '../enums';
 
 export interface ISkin {
   market_hash_name: string;

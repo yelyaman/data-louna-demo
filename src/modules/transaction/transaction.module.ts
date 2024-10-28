@@ -6,6 +6,6 @@ import { SkinTransaction } from 'src/entities/transaction.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([SkinTransaction])],
   providers: [TransactionService],
-  exports: [TransactionService]
+  exports: [TransactionService],
 })
-export class TransactionModule { }
+export class TransactionModule {}

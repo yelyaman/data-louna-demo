@@ -4,7 +4,7 @@ import { BuySkinDto } from './purchase.dto';
 
 @Controller('purchase')
 export class PurchaseController {
-  constructor(private readonly purchaseService: PurchaseService) { }
+  constructor(private readonly purchaseService: PurchaseService) {}
 
   @Post()
   buySkin(@Body() body: BuySkinDto, @Request() req) {

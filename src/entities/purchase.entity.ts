@@ -17,7 +17,7 @@ export class Purchase {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => User, user => user.purchases)
+  @ManyToOne(() => User, (user) => user.purchases)
   user: User;
 
   @Column()
@@ -26,9 +26,9 @@ export class Purchase {
   @Column()
   quantity: number;
 
-  @OneToOne(() => SkinTransaction, transaction => transaction.purchase)
+  @OneToOne(() => SkinTransaction, (transaction) => transaction.purchase)
   @JoinColumn()
-  transaction: SkinTransaction
+  transaction: SkinTransaction;
 
   @CreateDateColumn()
   createdAt: Date;

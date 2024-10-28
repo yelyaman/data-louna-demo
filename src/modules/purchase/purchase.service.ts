@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtPayload } from '../auth/auth.dto';
 import { DataSource, Repository } from 'typeorm';
 import { BuySkinDto } from './purchase.dto';
@@ -16,35 +16,42 @@ export class PurchaseService {
     private readonly balanceService: BalanceService,
     private readonly skinService: SkinService,
     private readonly transactionService: TransactionService,
-    private readonly dataSource: DataSource
-  ) { }
+    private readonly dataSource: DataSource,
+  ) {}
 
   async buySkin(user: JwtPayload, body: BuySkinDto) {
     return this.dataSource.transaction(async (manager) => {
-      const skin = await this.skinService.getOneById(body.skinId, manager)
+      const skin = await this.skinService.getOneById(body.skinId, manager);
 
-      const totalAmount = skin.price * body.quantity
-      const updatedBalance = await this.balanceService.decreaseBalance(user.id, totalAmount, manager)
+      const totalAmount = skin.price * body.quantity;
+      const updatedBalance = await this.balanceService.decreaseBalance(
+        user.id,
+        totalAmount,
+        manager,
+      );
 
-      this.skinService.decreaseQuantity(skin, body.quantity, manager)
+      this.skinService.decreaseQuantity(skin, body.quantity, manager);
 
       const purchase = this.purchaseRepository.create({
         user: {
-          id: user.id
+          id: user.id,
         },
         skinId: body.skinId,
         quantity: body.quantity,
-      })
+      });
 
-      const transaction = await this.transactionService.create({
-        totalAmount: totalAmount,
-        paymentMethod: body.paymentInfo.method
-      }, manager)
+      const transaction = await this.transactionService.create(
+        {
+          totalAmount: totalAmount,
+          paymentMethod: body.paymentInfo.method,
+        },
+        manager,
+      );
 
-      purchase.transaction = transaction
+      purchase.transaction = transaction;
       await manager.save(purchase);
 
-      return updatedBalance
-    })
+      return updatedBalance;
+    });
   }
 }

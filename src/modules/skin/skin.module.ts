@@ -6,6 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 @Module({
   imports: [TypeOrmModule.forFeature([Skin])],
   providers: [SkinService],
-  exports: [SkinService]
+  exports: [SkinService],
 })
-export class SkinModule { }
+export class SkinModule {}

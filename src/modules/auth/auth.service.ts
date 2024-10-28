@@ -26,7 +26,7 @@ export class AuthService {
 
     const equal = await bcrypt.compare(body.password, user.password);
     if (!equal) throw new UnauthorizedException('Invalid password or email');
-    
+
     const { password, ...rest } = user;
 
     const tokens = await this.generateTokens(rest);

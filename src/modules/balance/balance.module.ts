@@ -6,6 +6,6 @@ import { Balance } from 'src/entities/balance.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Balance])],
   providers: [BalanceService],
-  exports: [BalanceService]
+  exports: [BalanceService],
 })
-export class BalanceModule { }
+export class BalanceModule {}

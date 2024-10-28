@@ -1,8 +1,8 @@
 export enum Currency {
-    EUR = 'EUR'
+  EUR = 'EUR',
 }
 
 export enum TransactionStatus {
-    SUCCESS = 'SUCCESS',
-    FAILURE = 'FAILURE'
+  SUCCESS = 'SUCCESS',
+  FAILURE = 'FAILURE',
 }

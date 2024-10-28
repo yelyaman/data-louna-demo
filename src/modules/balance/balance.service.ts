@@ -5,36 +5,47 @@ import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
 export class BalanceService {
-    constructor(
-        @InjectRepository(Balance)
-        private balanceRepository: Repository<Balance>
-    ) { }
+  constructor(
+    @InjectRepository(Balance)
+    private balanceRepository: Repository<Balance>,
+  ) {}
 
-    async createBalance(userId: string) {
-        this.balanceRepository.save({
-            user: { id: userId }
-        })
-    }
-    async getUserBalance(userId: string, manager?: EntityManager): Promise<Balance> {
-        const repository = manager ? manager.getRepository(Balance) : this.balanceRepository;
+  async createBalance(userId: string) {
+    this.balanceRepository.save({
+      user: { id: userId },
+    });
+  }
+  async getUserBalance(
+    userId: string,
+    manager?: EntityManager,
+  ): Promise<Balance> {
+    const repository = manager
+      ? manager.getRepository(Balance)
+      : this.balanceRepository;
 
-        return repository.findOne({
-            where: {
-                user: {
-                    id: userId
-                }
-            }
-        })
-    }
+    return repository.findOne({
+      where: {
+        user: {
+          id: userId,
+        },
+      },
+    });
+  }
 
-    async decreaseBalance(userId: string, totalAmount: number, manager?: EntityManager): Promise<Balance> {
-        const repository = manager ? manager.getRepository(Balance) : this.balanceRepository
-        const balance = await this.getUserBalance(userId, manager)
-        if (balance.amount <= totalAmount)
-            throw new BadRequestException('total cost more than balance')
+  async decreaseBalance(
+    userId: string,
+    totalAmount: number,
+    manager?: EntityManager,
+  ): Promise<Balance> {
+    const repository = manager
+      ? manager.getRepository(Balance)
+      : this.balanceRepository;
+    const balance = await this.getUserBalance(userId, manager);
+    if (balance.amount <= totalAmount)
+      throw new BadRequestException('total cost more than balance');
 
-        balance.amount -= totalAmount
+    balance.amount -= totalAmount;
 
-        return repository.save(balance)
-    }
+    return repository.save(balance);
+  }
 }
